@@ -80,9 +80,14 @@ class Dialogue(object):
     num_stages = 3  # encoding, decoding, target
 
     def __init__(self, agent, kb, uuid, model='seq2seq'):
-        '''
+        """
         Dialogue data that is needed by the model.
-        '''
+        :param agent: Index corresponding to whether this agent is the buyer or the seller in the situation
+        :param kb: Knowledge base for the current agent in the current scenario
+        :param uuid: Scenario ID
+        :param model: Model Type. Can be seq2seq for the word model, or lf2lf for the coarse dialogue act model
+        Note: lf2lf stands for logical form to logical form
+        """
         self.uuid = uuid
         self.agent = agent
         self.kb = kb
@@ -326,10 +331,12 @@ class Preprocessor(object):
         return tokens
 
     def _process_example(self, ex):
-        '''
+        """
         Convert example to turn-based dialogue from each agent's perspective
         Create two Dialogue objects for each example
-        '''
+        :type ex: cocoa.core.dataset.Example
+        :return: a generator that creates two dialogues, one for the buyer and seller
+        """
         kbs = ex.scenario.kbs
         for agent in (0, 1):
             dialogue = Dialogue(agent, kbs[agent], ex.ex_id, model=self.model)
@@ -380,6 +387,10 @@ class Preprocessor(object):
 
     @classmethod
     def skip_example(cls, example):
+        """
+        Skip all examples that do not have enough tokens or turns to be a good example
+        :return: True if both agents speak less then 40 tokens of if the dialogue has less than two turns
+        """
         tokens = {0: 0, 1: 0}
         turns = {0: 0, 1: 0}
         for event in example.events:

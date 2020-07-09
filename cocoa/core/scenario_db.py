@@ -1,8 +1,11 @@
 class Scenario(object):
-    '''
-    A scenario represents a situation to be played out where each agent has a KB.
-    '''
     def __init__(self, uuid, attributes, kbs):
+        """
+        A scenario represents a situation to be played out where each agent has a KB.
+        :param uuid: a unique id for the scenario
+        :param attributes: The schema for the kbs in the scenario
+        :param kbs: A list of knowledge bases
+        """
         self.uuid = uuid
         self.attributes = attributes
         self.kbs = kbs

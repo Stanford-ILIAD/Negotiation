@@ -111,12 +111,20 @@ class PriceTracker(object):
         return numbers
 
     def link_entity(self, raw_tokens, kb=None, scale=True, price_clip=None):
+        """
+        Takes the numbers in the tokenized sentence and converts them into Entity Numbers
+        :param raw_tokens: List of dialogue tokens
+        :param kb: agent knowledge base
+        :param scale:
+        :param price_clip:
+        :return:
+        """
         tokens = ['<s>'] + raw_tokens + ['</s>']
         entity_tokens = []
         if kb:
             kb_numbers = self.get_kb_numbers(kb)
             list_price = kb.facts['item']['Price']
-        for i in xrange(1, len(tokens)-1):
+        for i in xrange(1, len(tokens)-1):  # Ignore the start and end tokens that were just added
             token = tokens[i]
             try:
                 number = float(self.process_string(token))

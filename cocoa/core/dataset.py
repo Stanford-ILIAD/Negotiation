@@ -121,9 +121,15 @@ def read_examples(paths, max_examples, Scenario):
     return examples
 
 def read_dataset(args, Scenario):
-    '''
-    Return the dataset specified by the given args.
-    '''
+    """
+    Given the paths of the dataset, parse the json files and convert them into python objects
+    :param args: command line arguments
+    :param Scenario: Reference to the Scenario Class (found in core.scenario)
+    :return: A dataset object with with training_examples and test_examples separated
+        Each training example contains a list of events, which include both messages sent to each other
+        and commands, like offering a price and accepting one. Each example also contains the outcome of the scenario
+        which includes the reward and the agreed upon price
+    """
     train_examples = read_examples(args.train_examples_paths, args.train_max_examples, Scenario)
     test_examples = read_examples(args.test_examples_paths, args.test_max_examples, Scenario)
     print("We found {0} train examples and {1} test examples".format(len(train_examples), len(test_examples)))
