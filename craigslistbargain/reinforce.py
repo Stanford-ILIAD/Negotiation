@@ -61,5 +61,5 @@ if __name__ == '__main__':
     optim = build_optim(args, model, None)
 
     scenarios = {'train': scenario_db.scenarios_list, 'dev': valid_scenario_db.scenarios_list}
-    trainer = RLTrainer(systems, scenarios, loss, optim, rl_agent, reward_func=args.reward)
+    trainer = RLTrainer(systems, scenarios, loss, optim, rl_agent, reward_func=args.reward, reward_beta=args.reward_beta)
     trainer.learn(args)
