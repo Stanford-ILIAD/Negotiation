@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 conda create -n craigslist python=2.7 --yes
 source activate craigslist
 pip install -r requirements.txt
@@ -10,6 +11,7 @@ python setup.py develop
 
 cd craigslistbargain
 
+# Download the training and validation sets
 curl https://worksheets.codalab.org/rest/bundles/0xda2bae7241044dbaa4e8ebb02c280d8f/contents/blob/ > data/train.json
 curl https://worksheets.codalab.org/rest/bundles/0xb0fe71ca124e43f6a783324734918d2c/contents/blob/ > data/dev.json
 
@@ -21,6 +23,7 @@ PYTHONPATH=. python parse_dialogue.py --transcripts data/dev.json --price-tracke
 mkdir -p mappings/lf2lf;
 mkdir -p cache/lf2lf;
 mkdir -p checkpoint/lf2lf;
+# Copy of the script in the README, but the gpuid field has been omitted so that it can run on a local machine
 PYTHONPATH=. python main.py --schema-path data/craigslist-schema.json --train-examples-paths data/train-parsed.json --test-examples-paths data/dev-parsed.json \
 --price-tracker price_tracker.pkl \
 --model lf2lf \

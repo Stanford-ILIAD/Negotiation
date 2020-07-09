@@ -4,7 +4,7 @@ from cocoa.core.event import Event
 
 
 class Session(object):
-    """An abstarct class for instantiating an agent.
+    """An abstract class for instantiating an agent.
 
     A session maintains the dialogue state and receive/send dialogue events.
 

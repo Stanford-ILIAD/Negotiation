@@ -113,11 +113,16 @@ class PriceTracker(object):
     def link_entity(self, raw_tokens, kb=None, scale=True, price_clip=None):
         """
         Takes the numbers in the tokenized sentence and converts them into Entity Numbers
-        :param raw_tokens: List of dialogue tokens
-        :param kb: agent knowledge base
-        :param scale:
-        :param price_clip:
-        :return:
+
+        Args:
+            raw_tokens: List of dialogue tokens
+            kb: agent knowledge base
+            scale(bool): If True, will scale the prices between 0 and 1
+            price_clip(int, optional): If specified, will ignore all numbers greater then the price_clip
+
+        Returns:
+            A new list of tokens, with the number tokens replaced with entities
+
         """
         tokens = ['<s>'] + raw_tokens + ['</s>']
         entity_tokens = []
@@ -164,10 +169,25 @@ class PriceTracker(object):
 
     @classmethod
     def train(cls, examples, output_path=None):
-        '''
-        examples: json chats
-        Use "$xxx$ as ground truth, and record n-gram context before and after the price.
-        '''
+        """
+        Given a training set, creates a record of every word that occurred before and after a "dollar token"
+        A dollar token is defined as any token that has a dollar sign at the beginning or end of it
+
+        Optionally, saves the context as a pickle file for other training/testing scripts
+
+        Args:
+            examples(list[Dialogue]): A list of dialogue examples from a training/dev set
+            output_path(str, optional): The path to save the pickled context
+
+        Returns:
+            {
+                left: A mapping from token to the number of times that token appears
+                    to the left of a dollar token
+                right: A mapping from token to the number of times that token appears
+                    to the right of a dollar token
+            }
+
+        """
         context = {'left': defaultdict(int), 'right': defaultdict(int)}
         for ex in examples:
             for event in ex['events']:
@@ -181,6 +201,7 @@ class PriceTracker(object):
         if output_path:
             write_pickle(context, output_path)
         return context
+
 
 if __name__ == '__main__':
     import argparse

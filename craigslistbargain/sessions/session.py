@@ -1,6 +1,7 @@
 from cocoa.sessions.session import Session as BaseSession
 from core.event import Event
 
+
 class Session(BaseSession):
     def offer(self, offer, metadata=None):
         """Send an offer event.

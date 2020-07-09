@@ -30,8 +30,25 @@ class NeuralSession(Session):
 
     # TODO: move this to preprocess?
     def convert_to_int(self):
+        """
+        Preprocesses tokenized utterances so that they can then be fed into the model.
+
+        Converts most recently added utterances in self.token_turns into the
+        encoder, decoder, and target outputs, which require integer indices for each token
+        instead of the actual token.
+
+        Note: self.turns has the following schema:
+        [
+            encoder_input (list[list[int]]),
+            decoder_input (list[list[int]]),
+            target_input (list[list[int]]),
+        ]
+        encoder_input, decoder_input, and target_input all have the same length: the number of turns
+        """
         for i, turn in enumerate(self.dialogue.token_turns):
             for curr_turns, stage in izip(self.dialogue.turns, ('encoding', 'decoding', 'target')):
+                # Don't convert tokens if they have already been converted
+                # by a previous invocation of this method
                 if i >= len(curr_turns):
                     curr_turns.append(self.env.textint_map.text_to_int(turn, stage))
 

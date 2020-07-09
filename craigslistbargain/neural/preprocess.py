@@ -82,10 +82,12 @@ class Dialogue(object):
     def __init__(self, agent, kb, uuid, model='seq2seq'):
         """
         Dialogue data that is needed by the model.
-        :param agent: Index corresponding to whether this agent is the buyer or the seller in the situation
+
+        :param agent: Index of the agent that will be the buyer in the scenario
         :param kb: Knowledge base for the current agent in the current scenario
         :param uuid: Scenario ID
         :param model: Model Type. Can be seq2seq for the word model, or lf2lf for the coarse dialogue act model
+
         Note: lf2lf stands for logical form to logical form
         """
         self.uuid = uuid
@@ -181,6 +183,16 @@ class Dialogue(object):
         return utterance
 
     def _add_utterance(self, agent, utterance, lf=None):
+        """
+        Add an utterance to the dialog. If the agents do not switch talking, the utterance
+        will be added to the end of the most recent utterance. Otherwise, a new turn will be created,
+        and the utterance will be added to the new turn
+
+        Args:
+            agent(int): The index of the agent that said the utterance
+            utterance(list[str]): A list of tokens inside the utterance
+            lf(str, optional): The Coarse Dialogue Act that was sent
+        """
         # Same agent talking
         if len(self.agents) > 0 and agent == self.agents[-1]:
             new_turn = False
