@@ -12,7 +12,7 @@ from cocoa.neural.rl_trainer import Statistics
 from core.controller import Controller
 from neural.trainer import Trainer
 
-MIXED_MARGIN_FAIR = 'mixed_margin_fair'
+MIXED_MARGIN_FAIR = 'mixed-margin-fair'
 
 
 class RLTrainer(Trainer):
@@ -230,13 +230,12 @@ class RLTrainer(Trainer):
         }
         """
         assert 0 <= self.reward_beta <= 1
-        print 'Debug beta, ', self.reward_beta
         margin_rewards = self._margin_reward(example)
         fair_rewards = self._fair_reward(example)
 
         rewards = {}
         for role in ('buyer', 'seller'):
-            rewards[role] = self.reward_beta * margin_rewards[role] * (1 - self.reward_beta) * fair_rewards[role]
+            rewards[role] = self.reward_beta * margin_rewards[role] + (1 - self.reward_beta) * fair_rewards[role]
         return rewards
 
     def get_reward(self, example, session):
