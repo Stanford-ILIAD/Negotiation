@@ -15,9 +15,14 @@ from core.controller import Controller
 from neural.trainer import Trainer
 from utterance import UtteranceBuilder
 
+MIXED_MARGIN_FAIR_PREFIX = 'mixed_margin_fair:'
+
 
 class RLTrainer(Trainer):
     def __init__(self, agents, scenarios, train_loss, optim, training_agent=0, reward_func='margin'):
+        """
+            Note: In order to specify a mixed reward func with a beta of 0.5, set the reward_func to "mixed_margin_fair:0.5"
+        """
         self.agents = agents
         self.scenarios = scenarios
 
@@ -211,6 +216,32 @@ class RLTrainer(Trainer):
             rewards[role] = -1. * abs(margin_rewards[role]) + 2.
         return rewards
 
+    def _mixed_reward(self, example, beta):
+        """
+        Returns a linear combination of the margin rewards (zero-sum) and the
+        fairness rewards (fully-cooperative)
+        Args:
+            example: A training example
+            beta(float): The hyper-parameter that determines how zero-sum the reward
+                function is. The higher the beta, the more selfish the agents will be.
+                Must be between 0 and 1
+
+        Returns(dict): A reward value for the buyer and seller
+        reward = {
+            buyer(float): The reward for the buyer,
+            seller(float): The reward for the buyer
+        }
+        """
+        assert 0 <= beta <= 1
+        print 'Debug beta, ', beta
+        margin_rewards = self._margin_reward(example)
+        fair_rewards = self._fair_reward(example)
+
+        rewards = {}
+        for role in ('buyer', 'seller'):
+            rewards[role] = beta * margin_rewards[role] * (1 - beta) * fair_rewards[role]
+        return rewards
+
     def get_reward(self, example, session):
         if not self._is_valid_dialogue(example):
             print 'Invalid'
@@ -221,5 +252,9 @@ class RLTrainer(Trainer):
             rewards = self._fair_reward(example)
         elif self.reward_func == 'length':
             rewards = self._length_reward(example)
+        elif self.reward_func.startswith(MIXED_MARGIN_FAIR_PREFIX):
+            beta = float(self.reward_func[len(MIXED_MARGIN_FAIR_PREFIX):])
+            rewards = self._mixed_reward(example, beta)
+
         reward = rewards[session.kb.role]
         return reward
