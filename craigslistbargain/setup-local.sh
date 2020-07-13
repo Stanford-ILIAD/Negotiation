@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Note: Please run this scripts from the root directory. Example: `./craigslistbargain/setup-local.sh`
+
 conda create -n craigslist python=2.7 --yes
 source activate craigslist
 pip install -r requirements.txt
@@ -7,6 +9,8 @@ conda install numpy=1.13.3 pandas=0.20.3 --yes
 pip install torchtext==0.2.1
 python -m nltk.downloader punkt
 python -m nltk.downloader stopwords
+python -m nltk.downloader perluniprops
+
 python setup.py develop
 
 cd craigslistbargain
