@@ -7,22 +7,23 @@ from cocoa.io.utils import read_json, write_json, read_pickle, write_pickle, cre
 from cocoa.core.schema import Schema
 from cocoa.lib import logstats
 
-from cocoa.neural.trainer import add_trainer_arguments, Trainer, Statistics
+from cocoa.neural.trainer import Trainer, Statistics
 from cocoa.neural.loss import SimpleLossCompute
 from cocoa.neural.beam import Scorer
+from cocoa.options import add_trainer_arguments
 
 from neural.utterance import UtteranceBuilder
-from neural.model_builder import add_model_arguments
-from neural import add_data_generator_arguments, get_data_generator, make_model_mappings
+from neural import get_data_generator, make_model_mappings
 from neural import model_builder
-from neural.evaluator import Evaluator, add_evaluator_arguments
+from neural.evaluator import Evaluator
+
+from options import add_data_generator_arguments, add_model_arguments
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--random-seed', help='Random seed', type=int, default=1)
     parser.add_argument('--stats-file', help='Path to save json statistics (dataset, training etc.) file')
     add_data_generator_arguments(parser)
-    add_evaluator_arguments(parser)
     args = parser.parse_args()
 
     # Know which arguments are for the models thus should not be
